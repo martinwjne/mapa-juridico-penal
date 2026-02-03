@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mapa Jurídico Anatómico</title>
+<style>
+body{margin:0;font-family:Arial;background:#020617;color:white}
+#app{display:flex;height:100vh}
+#menu{width:280px;background:#020617;padding:15px;display:flex;flex-direction:column;gap:10px;border-right:2px solid #1e293b;overflow-y:auto}
+#menu h2{text-align:center}
+#menu button{padding:10px;border:none;border-radius:6px;background:#1e293b;color:white;font-weight:bold;cursor:pointer}
+#menu button:hover{background:#334155}
+#viewer{flex:1;display:flex;justify-content:center;align-items:center}
+#body{width:100%;max-width:520px;height:100vh;max-height:900px;position:relative}
+.layer img{max-width:100%;max-height:100%;object-fit:contain}
+.layer{position:absolute;top:0;left:0;width:100%;height:100%;display:none}
+.layer img{width:100%;height:100%;object-fit:contain}
+.show{display:block}
+#panel{position:absolute;right:-360px;top:0;width:340px;height:100%;background:#020617;border-left:2px solid #1e293b;padding:15px;overflow-y:auto}
+#panel h3{margin-top:0}
+#panel ul{padding-left:18px}
+.explain{margin-top:10px;font-size:13px;line-height:1.4;color:#e5e7eb}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="menu">
+<h2>Mapa Jurídico</h2>
+<button onclick="show('humano')">Humano</button>
+<button onclick="show('cerebro');load('cerebro')">Cerebro</button>
+<button onclick="show('nervioso');load('nervioso')">Sistema Nervioso</button>
+<button onclick="show('corazon');load('corazon')">Corazón</button>
+<button onclick="show('esqueleto');load('esqueleto')">Esqueleto</button>
+<button onclick="show('manos');load('manos')">Manos</button>
+<button onclick="show('inmuno');load('inmuno')">Sistema Inmunológico</button></div>
+<div id="viewer">
+<div id="body">
+<div id="humano" class="layer show"><img src="humano.png"></div>
+<div id="cerebro" class="layer"><img src="cerebro.png"></div>
+<div id="nervioso" class="layer"><img src="nervioso.png"></div>
+<div id="corazon" class="layer"><img src="corazon.png"></div>
+<div id="esqueleto" class="layer"><img src="esqueleto.png"></div>
+<div id="manos" class="layer"><img src="manos.png"></div>
+<div id="inmuno" class="layer"><img src="inmuno.png"></div>
+<div id="panel"><h3 id="ptitle">Información</h3><div id="ptext"></div></div>
+</div>
+</div>
+</div>
+<script>
+function show(id){
+ const layers=document.querySelectorAll('.layer');
+ layers.forEach(l=>l.classList.remove('show'));
+ if(id==='todo'){layers.forEach(l=>l.classList.add('show'))}
+ else{document.getElementById(id).classList.add('show')}
+}const data={ cerebro:{title:'Fundamentos Constitucionales',html:`<ul>
+
+ <li>Art. 14 – Legalidad</li>
+ <li>Art. 16 – Debido proceso</li>
+ <li>Art. 18 – Sistema penitenciario</li>
+ <li>Art. 19 – Vinculación a proceso</li>
+ <li>Art. 20 – Derechos del imputado y la víctima</li>
+ <li>Art. 21 – Investigación y sanción</li>
+</ul>
+<div class='explain'>Representa la base normativa del sistema penal. La Constitución dirige todo el funcionamiento del proceso penal y establece los límites al poder punitivo del Estado.</div>`},
+ nervioso:{title:'Sistema Procesal Penal',html:`<ul>
+ <li>Presunción de inocencia</li>
+ <li>Debido proceso</li>
+ <li>Contradicción</li>
+ <li>Inmediación</li>
+ <li>Publicidad</li>
+ <li>Continuidad</li>
+ <li>Concentración</li>
+ <li>Oralidad</li>
+</ul>
+<div class='explain'>Simboliza la conexión entre todas las etapas del proceso penal, permitiendo que el sistema funcione de forma ordenada, justa y legal.</div>`},
+ corazon:{title:'Teoría del Delito',html:`<ul>
+ <li>Conducta</li>
+ <li>Tipicidad</li>
+ <li>Antijuridicidad</li>
+ <li>Culpabilidad</li>
+ <li>Punibilidad</li>
+ <li>Dolo</li>
+ <li>Culpa</li>
+</ul>
+<div class='explain'>Es el núcleo del derecho penal sustantivo, donde se analiza la conducta humana para determinar si constituye delito y si puede ser jurídicamente sancionada.</div>`},
+ esqueleto:{title:'Principios del Derecho Penal',html:`<ul>
+ <li>Legalidad</li>
+ <li>Tipicidad</li>
+ <li>Reserva de ley</li>
+ <li>Proporcionalidad</li>
+ <li>Humanidad de las penas</li>
+ <li>Intervención mínima</li>
+ <li>Lesividad</li>
+</ul>
+<div class='explain'>Funcionan como la estructura que sostiene todo el sistema penal y limitan el poder punitivo del Estado frente al ciudadano.</div>`},
+ manos:{title:'Sujetos Procesales',html:`<ul>
+ <li>Juez</li>
+ <li>Ministerio Público</li>
+ <li>Defensa</li>
+ <li>Imputado</li>
+ <li>Víctima</li>
+ <li>Asesor jurídico</li>
+ <li>Policía de investigación</li>
+</ul>
+<div class='explain'>Representan a las personas e instituciones que hacen funcionar el sistema de justicia penal.</div>`},
+ inmuno:{title:'Causas de Justificación y Eximentes',html:`<ul>
+ <li>Legítima defensa</li>
+ <li>Estado de necesidad</li>
+ <li>Cumplimiento del deber</li>
+ <li>Ejercicio de un derecho</li>
+ <li>Miedo insuperable</li>
+ <li>Error invencible</li>
+</ul>
+<div class='explain'>Son mecanismos de protección jurídica que impiden la sanción penal cuando la conducta está jurídicamente justificada.</div>`},
+ };function load(key){ if(!data[key]) return; document.getElementById('ptitle').innerText=data[key].title; document.getElementById('ptext').innerHTML=data[key].html; } </script>
+
+</body>
+</html>

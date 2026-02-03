@@ -2,104 +2,116 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Mapa Jurídico Penal</title>
+<title>Mapa Jurídico Anatómico</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0f172a;
-  color:white;
+margin:0;
+font-family:Arial, sans-serif;
+background:#020617;
+color:white;
 }
 
 #app{
-  display:flex;
-  height:100vh;
+display:flex;
+height:100vh;
 }
 
+/* ===== MENU ===== */
 #menu{
-  width:260px;
-  background:#020617;
-  padding:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  border-right:2px solid #1e293b;
+width:260px;
+background:#020617;
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:10px;
+border-right:2px solid #1e293b;
 }
 
 #menu h2{
-  text-align:center;
+text-align:center;
+margin-bottom:10px;
 }
 
 #menu button{
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  background:#1e293b;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.2s;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#1e293b;
+color:white;
+font-weight:bold;
+cursor:pointer;
+text-align:left;
 }
 
 #menu button:hover{
-  background:#334155;
+background:#334155;
 }
 
+/* ===== VIEWER ===== */
 #viewer{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-  gap:20px;
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
 }
 
+/* ===== BODY IMAGE STACK ===== */
 #body{
-  width:450px;
-  height:800px;
-  position:relative;
+width:420px;
+height:820px;
+position:relative;
 }
 
 .layer{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  display:none;
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
 }
 
 .layer img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+width:100%;
+height:100%;
+object-fit:contain;
 }
 
-.layer.show{
-  display:block;
+.show{
+display:block;
 }
 
+/* ===== PANEL ===== */
 #panel{
-  width:380px;
-  background:#020617;
-  border:2px solid #1e293b;
-  border-radius:10px;
-  padding:15px;
-  height:80%;
-  overflow-y:auto;
+position:absolute;
+right:0;
+top:0;
+width:360px;
+height:100%;
+background:#020617;
+border-left:2px solid #1e293b;
+padding:15px;
+overflow-y:auto;
 }
 
 #panel h3{
-  text-align:center;
-  margin-top:0;
+margin-top:0;
+text-align:center;
+}
+
+#panel ul{
+padding-left:20px;
 }
 
 .explain{
-  margin-top:10px;
-  font-size:14px;
-  line-height:1.5;
-  color:#e5e7eb;
+margin-top:10px;
+font-size:13px;
+line-height:1.5;
+color:#e5e7eb;
 }
 </style>
 </head>
@@ -108,76 +120,171 @@ body{
 
 <div id="app">
 
-  <div id="menu">
-    <h2>Mapa Jurídico</h2>
-    <button onclick="activate('cerebro')">🧠 Cerebro</button>
-    <button onclick="activate('nervioso')">⚡ Sistema Nervioso</button>
-    <button onclick="activate('corazon')">❤️ Corazón</button>
-    <button onclick="activate('esqueleto')">🦴 Esqueleto</button>
-    <button onclick="activate('manos')">✋ Manos</button>
-    <button onclick="activate('inmuno')">🛡️ Inmunológico</button>
-  </div>
+<!-- ===== MENU ===== -->
+<div id="menu">
+<h2>Mapa Jurídico</h2>
 
-  <div id="viewer">
-
-    <div id="body">
-      <div id="humano" class="layer show"><img src="humano.png"></div>
-      <div id="cerebro" class="layer"><img src="cerebro.png"></div>
-      <div id="nervioso" class="layer"><img src="nervioso.png"></div>
-      <div id="corazon" class="layer"><img src="corazon.png"></div>
-      <div id="esqueleto" class="layer"><img src="esqueleto.png"></div>
-      <div id="manos" class="layer"><img src="manos.png"></div>
-      <div id="inmuno" class="layer"><img src="inmuno.png"></div>
-    </div>
-
-    <div id="panel">
-      <h3 id="ptitle">Mapa Jurídico Penal</h3>
-      <div id="ptext">Selecciona un sistema del menú</div>
-    </div>
-
-  </div>
+<button onclick="show('humano')">🧍 Humano</button>
+<button onclick="show('cerebro');load('cerebro')">🧠 Cerebro</button>
+<button onclick="show('nervioso');load('nervioso')">⚡ Sistema Nervioso</button>
+<button onclick="show('corazon');load('corazon')">❤️ Corazón</button>
+<button onclick="show('esqueleto');load('esqueleto')">🦴 Esqueleto</button>
+<button onclick="show('manos');load('manos')">✋ Manos</button>
+<button onclick="show('inmuno');load('inmuno')">🛡️ Sistema Inmunológico</button>
 
 </div>
 
-<script>
-const layers = document.querySelectorAll('.layer');
-const panelTitle = document.getElementById('ptitle');
-const panelText = document.getElementById('ptext');
+<!-- ===== VIEWER ===== -->
+<div id="viewer">
 
-const data = {
-  cerebro:{
-    title:'Fundamento Constitucional',
-    text:"Art. 14, 16, 18, 19, 20 y 21<br><div class='explain'>Son el centro de mando del sistema penal, establecen la legalidad, el debido proceso y los límites del poder punitivo del Estado.</div>"
-  },
-  nervioso:{
-    title:'Principios Procesales',
-    text:"Presunción de inocencia, debido proceso, inmediación<br><div class='explain'>Conectan todas las partes del sistema jurídico penal y garantizan justicia procesal.</div>"
-  },
-  corazon:{
-    title:'Teoría del Delito',
-    text:"Conducta, tipicidad, antijuridicidad, culpabilidad<br><div class='explain'>Es el motor del delito: si uno falla, no existe delito que pueda perseguirse.</div>"
-  },
-  esqueleto:{
-    title:'Cédula de Identidad de la Ley Penal',
-    text:"Legalidad, tipicidad, reserva de ley<br><div class='explain'>Estructura que sostiene todo el sistema penal.</div>"
-  },
-  manos:{
-    title:'Sujetos Procesales',
-    text:"Juez, Ministerio Público, Defensa, Víctima<br><div class='explain'>Son quienes hacen funcionar el sistema de justicia penal.</div>"
-  },
-  inmuno:{
-    title:'Causas de Exclusión',
-    text:"Legítima defensa, estado de necesidad, cumplimiento del deber<br><div class='explain'>Protegen al sujeto frente a la punibilidad del Estado.</div>"
-  }
+<!-- ===== BODY ===== -->
+<div id="body">
+
+<div id="humano" class="layer show">
+<img src="humano.png">
+</div>
+
+<div id="cerebro" class="layer">
+<img src="cerebro.png">
+</div>
+
+<div id="nervioso" class="layer">
+<img src="nervioso.png">
+</div>
+
+<div id="corazon" class="layer">
+<img src="corazon.png">
+</div>
+
+<div id="esqueleto" class="layer">
+<img src="esqueleto.png">
+</div>
+
+<div id="manos" class="layer">
+<img src="manos.png">
+</div>
+
+<div id="inmuno" class="layer">
+<img src="inmuno.png">
+</div>
+
+</div>
+
+<!-- ===== PANEL ===== -->
+<div id="panel">
+<h3 id="ptitle">Mapa Jurídico Penal</h3>
+<div id="ptext">Selecciona un sistema</div>
+</div>
+
+</div>
+</div>
+
+<script>
+function show(id){
+const layers=document.querySelectorAll('.layer');
+layers.forEach(l=>l.classList.remove('show'));
+document.getElementById(id).classList.add('show');
+}
+
+const data={
+cerebro:{
+title:'Fundamento Constitucional',
+html:`
+<ul>
+<li>Art. 14 – Legalidad</li>
+<li>Art. 16 – Debido proceso</li>
+<li>Art. 18 – Sistema penitenciario</li>
+<li>Art. 19 – Vinculación a proceso</li>
+<li>Art. 20 – Derechos del imputado y la víctima</li>
+<li>Art. 21 – Investigación y sanción</li>
+</ul>
+<div class="explain">
+Es el centro de mando del sistema penal. La Constitución dirige todo el proceso penal y limita el poder punitivo del Estado.
+</div>
+`
+},
+
+nervioso:{
+title:'Principios Procesales',
+html:`
+<ul>
+<li>Presunción de inocencia</li>
+<li>Debido proceso</li>
+<li>Inmediación</li>
+<li>Publicidad</li>
+<li>Contradicción</li>
+<li>Continuidad</li>
+<li>Concentración</li>
+<li>Oralidad</li>
+</ul>
+<div class="explain">
+Conecta todo el sistema jurídico penal y permite que el proceso funcione de manera justa y ordenada.
+</div>
+`
+},
+
+corazon:{
+title:'Teoría del Delito',
+html:`
+<ul>
+<li>Conducta</li>
+<li>Tipicidad</li>
+<li>Antijuridicidad</li>
+<li>Culpabilidad</li>
+</ul>
+<div class="explain">
+Es el motor del derecho penal: si el corazón se detiene, no hay delito que perseguir.
+</div>
+`
+},
+
+esqueleto:{
+title:'Cédula de Identidad de la Ley Penal',
+html:`
+<ul>
+<li>Legalidad</li>
+<li>Tipicidad</li>
+<li>Reserva de ley</li>
+</ul>
+<div class="explain">
+Es la estructura que sostiene todo el sistema penal.
+</div>
+`
+},
+
+manos:{
+title:'Sujetos Procesales',
+html:`
+<ul>
+<li>Juez</li>
+<li>Ministerio Público</li>
+<li>Defensa</li>
+<li>Víctima</li>
+</ul>
+<div class="explain">
+Son quienes hacen funcionar la justicia penal.
+</div>
+`
+},
+
+inmuno:{
+title:'Causas de Exclusión',
+html:`
+<ul>
+<li>Legítima defensa</li>
+<li>Estado de necesidad</li>
+<li>Cumplimiento del deber</li>
+</ul>
+<div class="explain">
+Protegen al sujeto de la punibilidad penal.
+</div>
+`
+}
 };
 
-function activate(id){
-  layers.forEach(l=>l.classList.remove('show'));
-  document.getElementById('humano').classList.add('show');
-  document.getElementById(id).classList.add('show');
-
-  panelTitle.innerText = data[id].title;
-  panelText.innerHTML = data[id].text;
+function load(key){
+document.getElementById('ptitle').innerText=data[key].title;
+document.getElementById('ptext').innerHTML=data[key].html;
 }
 </script>
 

@@ -1,217 +1,65 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa Jurídico Penal Interactivo</title>
-
+<title>Mapa Jurídico Penal Interactivo 3D</title>
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#020617;
-    color:white;
-}
-
-#app{
-    display:flex;
-    height:100vh;
-    overflow:hidden;
-}
-
-/* ===== MENU ===== */
-#menu{
-    width:260px;
-    background:#020617;
-    padding:15px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    border-right:2px solid #1e293b;
-    z-index:10;
-}
-
-#menu h2{text-align:center;font-size:18px}
-
-#menu button{
-    padding:10px;
-    border:none;
-    border-radius:8px;
-    background:#1e293b;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    transition:.3s;
-}
+body{margin:0;font-family:Arial;background:#020617;color:white;overflow:hidden}
+#app{display:flex;height:100vh}
+#menu{width:300px;background:#020617;padding:15px;display:flex;flex-direction:column;gap:10px;border-right:2px solid #1e293b;z-index:5}
+#menu h2{text-align:center}
+#menu button{padding:10px;border:none;border-radius:6px;background:#1e293b;color:white;font-weight:bold;cursor:pointer;transition:.3s}
 #menu button:hover{background:#334155;transform:scale(1.05)}
-
-/* ===== VIEWER ===== */
-#viewer{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    position:relative;
-}
-
-/* ===== BODY STACK ===== */
-#body{
-    width:100%;
-    max-width:420px;
-    height:100%;
-    max-height:820px;
-    position:relative;
-}
-
-.layer{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    display:none;
-}
-
-.layer img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    pointer-events:none;
-}
-
-/* humano siempre visible */
-#humano{display:block;z-index:1}
-
-/* overlays */
-.overlay{z-index:2}
-
-/* ===== PANEL ===== */
-#panel{
-    position:absolute;
-    right:10px;
-    top:10px;
-    width:300px;
-    max-height:90vh;
-    background:rgba(2,6,23,.95);
-    border:2px solid #1e293b;
-    border-radius:12px;
-    padding:12px;
-    overflow-y:auto;
-    font-size:14px;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-    #app{flex-direction:column}
-    #menu{
-        width:100%;
-        flex-direction:row;
-        flex-wrap:wrap;
-        justify-content:center;
-    }
-    #menu button{font-size:12px;padding:8px}
-    #panel{
-        position:relative;
-        width:95%;
-        margin:10px auto;
-    }
-}
+#viewer{flex:1;display:flex;justify-content:center;align-items:center;perspective:1200px;position:relative}
+#body{width:100%;max-width:520px;height:100vh;max-height:900px;position:relative;transform-style:preserve-3d;animation:float 6s ease-in-out infinite}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+.layer{position:absolute;top:0;left:0;width:100%;height:100%;display:none;transition:.5s}
+.layer img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 0 25px rgba(0,255,255,.15));transition:.5s}
+.layer.show{display:block}
+.layer.show img{transform:scale(1.03)}
+#panel{position:absolute;right:20px;top:20px;width:340px;height:auto;max-height:90vh;background:rgba(2,6,23,.95);border:2px solid #1e293b;border-radius:12px;padding:15px;overflow-y:auto;box-shadow:0 0 40px rgba(0,255,255,.08)}
+#panel h3{margin-top:0;text-align:center}
+#panel ul{padding-left:18px}
+.explain{margin-top:10px;font-size:13px;line-height:1.4;color:#e5e7eb}
+svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.line{stroke:#38bdf8;stroke-width:2;stroke-dasharray:6;animation:dash 4s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-100}}
+.tag{position:absolute;background:#020617cc;padding:6px 10px;border-radius:8px;font-size:12px;border:1px solid #1e293b;box-shadow:0 0 15px rgba(56,189,248,.3)}
 </style>
 </head>
-
 <body>
-
 <div id="app">
-
 <div id="menu">
-<h2>Mapa Jurídico</h2>
+<h2>Mapa Jurídico 3D</h2>
 <button onclick="activate('cerebro')">🧠 Cerebro</button>
-<button onclick="activate('nervioso')">⚡ Nervioso</button>
+<button onclick="activate('nervioso')">⚡ Sistema Nervioso</button>
 <button onclick="activate('corazon')">❤️ Corazón</button>
 <button onclick="activate('esqueleto')">🦴 Esqueleto</button>
 <button onclick="activate('manos')">✋ Manos</button>
 <button onclick="activate('inmuno')">🛡️ Inmunológico</button>
 </div>
-
 <div id="viewer">
-
+<svg id="lines"></svg>
 <div id="body">
-    <div id="humano" class="layer"><img src="humano.png"></div>
-
-    <div id="cerebro" class="layer overlay"><img src="cerebro.png"></div>
-    <div id="nervioso" class="layer overlay"><img src="nervioso.png"></div>
-    <div id="corazon" class="layer overlay"><img src="corazon.png"></div>
-    <div id="esqueleto" class="layer overlay"><img src="esqueleto.png"></div>
-    <div id="manos" class="layer overlay"><img src="manos.png"></div>
-    <div id="inmuno" class="layer overlay"><img src="inmuno.png"></div>
+<div id="humano" class="layer show"><img src="humano.png"></div>
+<div id="cerebro" class="layer"><img src="cerebro.png"></div>
+<div id="nervioso" class="layer"><img src="nervioso.png"></div>
+<div id="corazon" class="layer"><img src="corazon.png"></div>
+<div id="esqueleto" class="layer"><img src="esqueleto.png"></div>
+<div id="manos" class="layer"><img src="manos.png"></div>
+<div id="inmuno" class="layer"><img src="inmuno.png"></div>
 </div>
-
-<div id="panel">
-<h3 id="ptitle">Mapa Jurídico Penal</h3>
-<div id="ptext">Selecciona un sistema</div>
-</div>
-
+<div id="panel"><h3 id="ptitle">Mapa Jurídico Penal</h3><div id="ptext">Selecciona un sistema</div></div>
 </div>
 </div>
-
 <script>
-const overlays=document.querySelectorAll('.overlay');
+const layers=document.querySelectorAll('.layer');
 const panelTitle=document.getElementById('ptitle');
 const panelText=document.getElementById('ptext');
+const svg=document.getElementById('lines');const data={ cerebro:{title:'Fundamento Constitucional',text:Art. 14, 16, 18, 19, 20 y 21<br><div class='explain'>Centro de mando del sistema penal: legalidad, debido proceso y límites al poder punitivo del Estado.</div>,pos:{x:260,y:120}}, nervioso:{title:'Principios Procesales',text:Presunción de inocencia, debido proceso, inmediación<br><div class='explain'>Conecta todo el sistema jurídico penal.</div>,pos:{x:260,y:260}}, corazon:{title:'Teoría del Delito',text:Conducta, tipicidad, antijuridicidad, culpabilidad<br><div class='explain'>Motor del delito: si se detiene, no hay delito.</div>,pos:{x:260,y:420}}, esqueleto:{title:'Cédula de Identidad de la Ley Penal',text:Legalidad, tipicidad, reserva de ley<br><div class='explain'>Estructura que sostiene todo el sistema.</div>,pos:{x:120,y:300}}, manos:{title:'Sujetos Procesales',text:Juez, MP, Defensa, Víctima<br><div class='explain'>Quienes hacen funcionar la justicia penal.</div>,pos:{x:400,y:520}}, inmuno:{title:'Causas de Exclusión',text:Legítima defensa, estado de necesidad, cumplimiento del deber<br><div class='explain'>Protegen al sujeto de la punibilidad.</div>,pos:{x:260,y:650}} };
 
-const data={
-cerebro:{
-title:'Fundamento Constitucional',
-text:`Artículos 14, 16, 18, 19, 20 y 21
-<div class="explain">
-Centro de mando del sistema penal: legalidad, debido proceso y límites al poder punitivo del Estado.
-</div>`
-},
-nervioso:{
-title:'Principios Procesales',
-text:`Presunción de inocencia, debido proceso, inmediación
-<div class="explain">
-Conecta todo el sistema jurídico penal.
-</div>`
-},
-corazon:{
-title:'Teoría del Delito',
-text:`Conducta, tipicidad, antijuridicidad, culpabilidad
-<div class="explain">
-Motor del delito: si se detiene, no hay delito.
-</div>`
-},
-esqueleto:{
-title:'Cédula de Identidad de la Ley Penal',
-text:`Legalidad, tipicidad, reserva de ley
-<div class="explain">
-Estructura que sostiene todo el sistema.
-</div>`
-},
-manos:{
-title:'Sujetos Procesales',
-text:`Juez, Ministerio Público, Defensa, Víctima
-<div class="explain">
-Quienes hacen funcionar la justicia penal.
-</div>`
-},
-inmuno:{
-title:'Causas de Exclusión',
-text:`Legítima defensa, estado de necesidad, cumplimiento del deber
-<div class="explain">
-Protegen al sujeto de la punibilidad.
-</div>`
-}
-};
+function activate(id){ layers.forEach(l=>l.classList.remove('show')); document.getElementById('humano').classList.add('show'); document.getElementById(id).classList.add('show'); panelTitle.innerText=data[id].title; panelText.innerHTML=data[id].text; drawLine(data[id].pos); }
 
-function activate(id){
-    overlays.forEach(l=>l.style.display="none");
-    const layer=document.getElementById(id);
-    layer.style.display="block";
-    panelTitle.innerText=data[id].title;
-    panelText.innerHTML=data[id].text;
-}
-</script>
+function drawLine(pos){ svg.innerHTML=''; const line=document.createElementNS('http://www.w3.org/2000/svg','line'); line.setAttribute('x1','50%'); line.setAttribute('y1','50%'); line.setAttribute('x2',pos.x); line.setAttribute('y2',pos.y); line.setAttribute('class','line'); svg.appendChild(line); } </script>
 
 </body>
 </html>

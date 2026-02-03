@@ -3,164 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Mapa Jurídico Penal Interactivo</title>
 
 <style>
-*{box-sizing:border-box}
-
 body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#020617;
-color:white;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#020617;
+    color:white;
 }
 
 #app{
-display:flex;
-min-height:100vh;
-width:100%;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
 }
 
 /* ===== MENU ===== */
 #menu{
-width:260px;
-background:#020617;
-padding:12px;
-display:flex;
-flex-direction:column;
-gap:8px;
-border-right:2px solid #1e293b;
+    width:260px;
+    background:#020617;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    border-right:2px solid #1e293b;
+    z-index:10;
 }
 
-#menu h2{
-text-align:center;
-margin:5px 0;
-font-size:18px
-}
+#menu h2{text-align:center;font-size:18px}
 
 #menu button{
-padding:12px;
-border:none;
-border-radius:8px;
-background:#1e293b;
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:.2s;
-text-align:left
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#1e293b;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
 }
-
-#menu button:hover{
-background:#334155;
-}
-
-#menu button.active{
-background:#38bdf8;
-color:#020617
-}
+#menu button:hover{background:#334155;transform:scale(1.05)}
 
 /* ===== VIEWER ===== */
 #viewer{
-flex:1;
-display:flex;
-justify-content:center;
-align-items:center;
-position:relative;
-padding:10px;
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
 }
 
-/* ===== BODY IMAGE ===== */
+/* ===== BODY STACK ===== */
 #body{
-width:100%;
-max-width:420px;
-height:auto;
-aspect-ratio:9/16;
-position:relative;
+    width:100%;
+    max-width:420px;
+    height:100%;
+    max-height:820px;
+    position:relative;
 }
 
 .layer{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-display:none;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:none;
 }
 
 .layer img{
-width:100%;
-height:100%;
-object-fit:contain;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    pointer-events:none;
 }
 
-.layer.show{
-display:block;
-}
+/* humano siempre visible */
+#humano{display:block;z-index:1}
+
+/* overlays */
+.overlay{z-index:2}
 
 /* ===== PANEL ===== */
 #panel{
-position:absolute;
-right:10px;
-top:10px;
-width:300px;
-max-height:90vh;
-background:rgba(2,6,23,.96);
-border:1px solid #1e293b;
-border-radius:12px;
-padding:12px;
-overflow-y:auto;
-}
-
-#panel h3{
-margin-top:0;
-text-align:center;
-font-size:16px
-}
-
-.explain{
-margin-top:8px;
-font-size:13px;
-line-height:1.4;
-color:#e5e7eb
+    position:absolute;
+    right:10px;
+    top:10px;
+    width:300px;
+    max-height:90vh;
+    background:rgba(2,6,23,.95);
+    border:2px solid #1e293b;
+    border-radius:12px;
+    padding:12px;
+    overflow-y:auto;
+    font-size:14px;
 }
 
 /* ===== MOBILE ===== */
-@media(max-width:850px){
-
-#app{
-flex-direction:column;
-}
-
-#menu{
-width:100%;
-flex-direction:row;
-flex-wrap:wrap;
-justify-content:center;
-border-right:none;
-border-bottom:2px solid #1e293b;
-}
-
-#menu button{
-width:48%;
-font-size:12px;
-}
-
-#viewer{
-flex-direction:column;
-}
-
-#panel{
-position:relative;
-width:95%;
-margin-top:10px;
-right:auto;
-top:auto;
-}
-
-#body{
-max-width:300px;
-}
+@media(max-width:768px){
+    #app{flex-direction:column}
+    #menu{
+        width:100%;
+        flex-direction:row;
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+    #menu button{font-size:12px;padding:8px}
+    #panel{
+        position:relative;
+        width:95%;
+        margin:10px auto;
+    }
 }
 </style>
 </head>
@@ -169,52 +123,43 @@ max-width:300px;
 
 <div id="app">
 
-<!-- ===== MENU ===== -->
 <div id="menu">
 <h2>Mapa Jurídico</h2>
-<button onclick="activate('humano',this)">🧍 Humano</button>
-<button onclick="activate('cerebro',this)">🧠 Cerebro</button>
-<button onclick="activate('nervioso',this)">⚡ Nervioso</button>
-<button onclick="activate('corazon',this)">❤️ Corazón</button>
-<button onclick="activate('esqueleto',this)">🦴 Esqueleto</button>
-<button onclick="activate('manos',this)">✋ Manos</button>
-<button onclick="activate('inmuno',this)">🛡️ Inmunológico</button>
+<button onclick="activate('cerebro')">🧠 Cerebro</button>
+<button onclick="activate('nervioso')">⚡ Nervioso</button>
+<button onclick="activate('corazon')">❤️ Corazón</button>
+<button onclick="activate('esqueleto')">🦴 Esqueleto</button>
+<button onclick="activate('manos')">✋ Manos</button>
+<button onclick="activate('inmuno')">🛡️ Inmunológico</button>
 </div>
 
-<!-- ===== VIEWER ===== -->
 <div id="viewer">
 
 <div id="body">
-<div id="humano" class="layer show"><img src="humano.png"></div>
-<div id="cerebro" class="layer"><img src="cerebro.png"></div>
-<div id="nervioso" class="layer"><img src="nervioso.png"></div>
-<div id="corazon" class="layer"><img src="corazon.png"></div>
-<div id="esqueleto" class="layer"><img src="esqueleto.png"></div>
-<div id="manos" class="layer"><img src="manos.png"></div>
-<div id="inmuno" class="layer"><img src="inmuno.png"></div>
+    <div id="humano" class="layer"><img src="humano.png"></div>
+
+    <div id="cerebro" class="layer overlay"><img src="cerebro.png"></div>
+    <div id="nervioso" class="layer overlay"><img src="nervioso.png"></div>
+    <div id="corazon" class="layer overlay"><img src="corazon.png"></div>
+    <div id="esqueleto" class="layer overlay"><img src="esqueleto.png"></div>
+    <div id="manos" class="layer overlay"><img src="manos.png"></div>
+    <div id="inmuno" class="layer overlay"><img src="inmuno.png"></div>
 </div>
 
 <div id="panel">
 <h3 id="ptitle">Mapa Jurídico Penal</h3>
-<div id="ptext">Selecciona un sistema del cuerpo</div>
+<div id="ptext">Selecciona un sistema</div>
 </div>
 
 </div>
 </div>
 
 <script>
-
-const layers=document.querySelectorAll('.layer');
+const overlays=document.querySelectorAll('.overlay');
 const panelTitle=document.getElementById('ptitle');
 const panelText=document.getElementById('ptext');
 
 const data={
-
-humano:{
-title:'Mapa Jurídico Penal',
-text:'Representación anatómica del Derecho Penal como cuerpo humano.'
-},
-
 cerebro:{
 title:'Fundamento Constitucional',
 text:`Artículos 14, 16, 18, 19, 20 y 21
@@ -222,7 +167,6 @@ text:`Artículos 14, 16, 18, 19, 20 y 21
 Centro de mando del sistema penal: legalidad, debido proceso y límites al poder punitivo del Estado.
 </div>`
 },
-
 nervioso:{
 title:'Principios Procesales',
 text:`Presunción de inocencia, debido proceso, inmediación
@@ -230,7 +174,6 @@ text:`Presunción de inocencia, debido proceso, inmediación
 Conecta todo el sistema jurídico penal.
 </div>`
 },
-
 corazon:{
 title:'Teoría del Delito',
 text:`Conducta, tipicidad, antijuridicidad, culpabilidad
@@ -238,15 +181,13 @@ text:`Conducta, tipicidad, antijuridicidad, culpabilidad
 Motor del delito: si se detiene, no hay delito.
 </div>`
 },
-
 esqueleto:{
 title:'Cédula de Identidad de la Ley Penal',
 text:`Legalidad, tipicidad, reserva de ley
 <div class="explain">
-Estructura que sostiene todo el sistema penal.
+Estructura que sostiene todo el sistema.
 </div>`
 },
-
 manos:{
 title:'Sujetos Procesales',
 text:`Juez, Ministerio Público, Defensa, Víctima
@@ -254,7 +195,6 @@ text:`Juez, Ministerio Público, Defensa, Víctima
 Quienes hacen funcionar la justicia penal.
 </div>`
 },
-
 inmuno:{
 title:'Causas de Exclusión',
 text:`Legítima defensa, estado de necesidad, cumplimiento del deber
@@ -262,26 +202,15 @@ text:`Legítima defensa, estado de necesidad, cumplimiento del deber
 Protegen al sujeto de la punibilidad.
 </div>`
 }
-
 };
 
-function activate(id,btn){
-
-document.querySelectorAll('#menu button').forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-
-layers.forEach(l=>l.classList.remove('show'));
-
-document.getElementById('humano').classList.add('show');
-if(id!=='humano'){
-document.getElementById(id).classList.add('show');
+function activate(id){
+    overlays.forEach(l=>l.style.display="none");
+    const layer=document.getElementById(id);
+    layer.style.display="block";
+    panelTitle.innerText=data[id].title;
+    panelText.innerHTML=data[id].text;
 }
-
-panelTitle.innerText=data[id].title;
-panelText.innerHTML=data[id].text;
-
-}
-
 </script>
 
 </body>
